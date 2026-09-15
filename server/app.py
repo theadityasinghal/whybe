@@ -2,6 +2,9 @@
 FastAPI application serving credit scoring and TreeSHAP explainability.
 """
 
+import os
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/mpl_cache")
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field

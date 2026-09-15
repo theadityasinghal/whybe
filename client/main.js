@@ -1,4 +1,6 @@
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ? "http://127.0.0.1:8000"
+  : (localStorage.getItem("API_URL") || "https://whybe-backend.onrender.com");
 
 const PRESETS = {
   urban_gig_worker: {
