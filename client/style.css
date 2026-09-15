@@ -21,6 +21,16 @@
   
   --primary: #ffffff;
   --on-primary: #000000;
+
+  /* Eulerian Blue Token System (Intelligent Geometric Cobalt/Electric Accent) */
+  --eulerian-blue: #0066ff;
+  --eulerian-blue-hover: #1f75ff;
+  --eulerian-blue-active: #0052cc;
+  --eulerian-blue-bright: #388bfd;
+  --eulerian-blue-subtle: rgba(0, 102, 255, 0.09);
+  --eulerian-blue-muted: rgba(0, 102, 255, 0.18);
+  --eulerian-blue-border: rgba(0, 102, 255, 0.38);
+  --eulerian-blue-glow: rgba(0, 102, 255, 0.22);
   
   /* Semantic Accent Accents (Restrained, Crisp, Non-neon) */
   --accent-green: #22c55e;
@@ -101,8 +111,8 @@ body {
 .brand-mark {
   width: 36px;
   height: 36px;
-  background: var(--ink);
-  color: var(--canvas);
+  background: var(--eulerian-blue);
+  color: #ffffff;
   font-family: var(--font-mono);
   font-weight: 700;
   font-size: 15px;
@@ -113,6 +123,8 @@ body {
   letter-spacing: -0.05em;
   user-select: none;
   flex-shrink: 0;
+  border: 1px solid var(--eulerian-blue-border);
+  box-shadow: 0 0 16px var(--eulerian-blue-glow);
 }
 
 .brand-title {
@@ -160,9 +172,15 @@ body {
 }
 
 .btn-preset:hover {
-  background-color: var(--hairline-soft);
-  border-color: var(--hairline-bright);
-  color: var(--ink);
+  background-color: var(--eulerian-blue-subtle);
+  border-color: var(--eulerian-blue-border);
+  color: #ffffff;
+}
+
+.btn-preset.active {
+  background-color: var(--eulerian-blue-muted);
+  border-color: var(--eulerian-blue);
+  color: #ffffff;
 }
 
 .btn-preset:active {
@@ -315,16 +333,16 @@ body {
 
 .info-btn:hover,
 .info-btn:focus-visible {
-  border-color: var(--ink);
-  color: var(--ink);
-  background: var(--hairline-soft);
+  border-color: var(--eulerian-blue);
+  color: var(--eulerian-blue-bright);
+  background: var(--eulerian-blue-subtle);
   outline: none;
 }
 
 .slider-val {
   font-family: var(--font-mono);
   font-weight: 600;
-  color: var(--ink);
+  color: var(--eulerian-blue-bright);
 }
 
 /* Inputs & Selects */
@@ -344,8 +362,9 @@ select {
 
 input[type="number"]:focus,
 select:focus {
-  border-color: var(--ink);
+  border-color: var(--eulerian-blue);
   background-color: var(--canvas-elevated);
+  box-shadow: 0 0 0 2px var(--eulerian-blue-subtle);
 }
 
 select {
@@ -364,6 +383,7 @@ input[type="range"] {
   outline: none;
   margin: 10px 0 6px 0;
   cursor: pointer;
+  accent-color: var(--eulerian-blue);
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -372,23 +392,26 @@ input[type="range"]::-webkit-slider-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--eulerian-blue);
   cursor: pointer;
-  border: 2px solid var(--canvas);
-  transition: transform 0.1s ease;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 6px var(--eulerian-blue-glow);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
+  transform: scale(1.2);
+  box-shadow: 0 0 10px var(--eulerian-blue-glow);
 }
 
 input[type="range"]::-moz-range-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--eulerian-blue);
   cursor: pointer;
-  border: 2px solid var(--canvas);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 6px var(--eulerian-blue-glow);
 }
 
 /* ==========================================================================
@@ -739,14 +762,15 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .ai-sparkle-badge {
-  background: #ffffff;
-  color: #000000;
+  background: var(--eulerian-blue);
+  color: #ffffff;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 4px;
   letter-spacing: 0.04em;
+  box-shadow: 0 0 10px var(--eulerian-blue-glow);
 }
 
 .lang-switch-group, .tab-pill-group {
@@ -771,10 +795,20 @@ input[type="range"]::-moz-range-thumb {
   transition: var(--transition);
 }
 
+.lang-pill:hover:not(.active), .tab-pill:hover:not(.active) {
+  color: var(--ink);
+  background: var(--eulerian-blue-subtle);
+}
+
 .lang-pill.active, .tab-pill.active {
-  background: var(--ink);
-  color: var(--on-primary);
+  background: var(--eulerian-blue);
+  color: #ffffff;
   font-weight: 600;
+  box-shadow: 0 0 8px var(--eulerian-blue-glow);
+}
+
+.copilot-card {
+  border-top: 2px solid var(--eulerian-blue);
 }
 
 .copilot-explanation {
