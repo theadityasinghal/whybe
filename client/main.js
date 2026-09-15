@@ -158,31 +158,35 @@ function debouncedEvaluate() {
   debounceTimer = setTimeout(evaluateApplicant, 100);
 }
 
-function evaluateApplicant() {
+async function evaluateApplicant() {
   const payload = getPayload();
   const statusEl = document.getElementById('calcStatus');
   if (statusEl) statusEl.innerText = "Updating score...";
 
-  fetch(`${API_URL}/api/score`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  })
-  .then(res => {
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
-  })
-  .then(data => {
+  try {
+    const res = await fetch(`${API_URL}/api/score`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      if (statusEl) statusEl.innerText = "Score Range: 300 to 850";
+      return;
+    }
+
+    const data = await res.json();
     currentApplicantData = payload;
     currentScoreData = data;
     renderScore(data);
     renderFactors(data);
+    syncSimulatorBaseline(payload, data);
+    debouncedTriggerCopilot();
     if (statusEl) statusEl.innerText = "Score Range: 300 to 850";
-  })
-  .catch(err => {
+  } catch (err) {
     console.error("Backend connection failed:", err);
     showBackendError();
-  });
+  }
 }
 
 function showBackendError() {
@@ -242,29 +246,14 @@ function renderFactors(data) {
   const bList = document.getElementById('boostersList');
   const aList = document.getElementById('adverseList');
 
-  // Find max absolute SHAP value for proportional mini visual bars
-  const allShap = [
-    ...(data.top_positive_factors || []).map(f => Math.abs(f.shap_value)),
-    ...(data.top_negative_factors || []).map(f => Math.abs(f.shap_value))
-  ];
-  const maxShap = allShap.length > 0 ? Math.max(...allShap, 0.1) : 1.0;
-
   if (data.top_positive_factors && data.top_positive_factors.length > 0) {
     bList.innerHTML = data.top_positive_factors.map(f => {
       const friendlyName = getFriendlyLabel(f.feature, f.label);
       const impactPts = Math.round(Math.abs(f.shap_value) * 100);
-      const barPct = Math.min(100, Math.max(12, Math.round((Math.abs(f.shap_value) / maxShap) * 100)));
       return `
         <div class="factor-item factor-pos">
-          <div style="flex: 1;">
-            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
-              <span class="factor-label">${friendlyName}</span>
-              <span class="factor-value">+${impactPts} pts</span>
-            </div>
-            <div style="width: 100%; height: 4px; background: rgba(34, 197, 94, 0.12); border-radius: 2px; overflow: hidden;">
-              <div style="width: ${barPct}%; height: 100%; background: var(--accent-green); border-radius: 2px;"></div>
-            </div>
-          </div>
+          <span class="factor-label">${friendlyName}</span>
+          <span class="factor-value">+${impactPts} pts</span>
         </div>
       `;
     }).join('');
@@ -276,23 +265,15 @@ function renderFactors(data) {
     aList.innerHTML = data.top_negative_factors.map(f => {
       const friendlyName = getFriendlyLabel(f.feature, f.label);
       const impactPts = Math.round(Math.abs(f.shap_value) * 100);
-      const barPct = Math.min(100, Math.max(12, Math.round((Math.abs(f.shap_value) / maxShap) * 100)));
       return `
         <div class="factor-item factor-neg">
-          <div style="flex: 1;">
-            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
-              <span class="factor-label">${friendlyName}</span>
-              <span class="factor-value">-${impactPts} pts</span>
-            </div>
-            <div style="width: 100%; height: 4px; background: rgba(239, 68, 68, 0.12); border-radius: 2px; overflow: hidden;">
-              <div style="width: ${barPct}%; height: 100%; background: var(--accent-red); border-radius: 2px;"></div>
-            </div>
-          </div>
+          <span class="factor-label">${friendlyName}</span>
+          <span class="factor-value">-${impactPts} pts</span>
         </div>
       `;
     }).join('');
   } else {
-    aList.innerHTML = `<div class="factor-empty">No adverse risk penalties identified</div>`;
+    aList.innerHTML = `<div class="factor-empty">No negative factors identified</div>`;
   }
 }
 

@@ -14,6 +14,7 @@ ps/
 # Archives & compressed buffers
 archive/
 archives/
+.matplotlib_cache/
 *.zip
 *.tar
 *.tar.gz
