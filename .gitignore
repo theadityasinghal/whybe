@@ -1,20 +1,44 @@
+# Environment / Virtualenvs
+.venv/
+venv/
+env/
+ENV/
+*.env
+.env*
+
+# Problem statement & temporary notes
+ps.txt
+ps/
+*ps*.*
+
+# Archives & compressed buffers
+archive/
+archives/
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.bak
+*.old
+*.backup
+*.tmp
+*.swp
+*~
+
+# OS buffers & caches
 .DS_Store
 Thumbs.db
+.Spotlight-V100
+.Trashes
 
-# Python
+# Python caches
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
-env/
-venv/
-.venv/
-ENV/
+.pytest_cache/
+.mypy_cache/
 
 # Jupyter
-.ipynb_checkpoints
-
-# Environment variables
-.env
-.env.local
+.ipynb_checkpoints/
