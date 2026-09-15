@@ -165,6 +165,30 @@ def goal_seek(req: GoalSeekRequest):
     result = simulator.goal_seek(data, target_score=req.target_score, language=req.language)
     return {"success": True, "data": result}
 
+@app.get("/api/metrics")
+def get_metrics():
+    """Returns exact model evaluation metrics and 5-fold CV benchmarks."""
+    return {
+        "accuracy": 97.2,
+        "f1_score": 98.0,
+        "roc_auc": 99.6,
+        "pr_auc": 99.8,
+        "cv_accuracy": 89.7,
+        "cv_f1": 92.6,
+        "cv_roc_auc": 96.4,
+        "cv_pr_auc": 98.4,
+        "confusion_matrix": {
+            "true_negative": 599,
+            "false_positive": 33,
+            "false_negative": 23,
+            "true_positive": 1345
+        },
+        "dataset_size": 2000,
+        "default_penalty_ratio": "2.0x",
+        "monotonic_constraints_enforced": True,
+        "calibration": "Platt Sigmoid (3-Fold CV)"
+    }
+
 # Mount static frontend console so full app runs from a single unified server
 CLIENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../client"))
 if os.path.isdir(CLIENT_DIR):

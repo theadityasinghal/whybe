@@ -4,8 +4,11 @@
   "description": "AI-Powered Alternate Credit Scoring with TreeSHAP Explainability",
   "scripts": {
     "server": "export MPLCONFIGDIR=/tmp/mpl_cache && ./.venv/bin/uvicorn server.app:app --host 127.0.0.1 --port 8000 --reload",
+    "dev:server": "npm run server",
     "client": "python3 -m http.server 3000 --directory client",
+    "dev:client": "npm run client",
     "dev": "npm run server & npm run client",
+    "evaluate": "./.venv/bin/python3 server/evaluate_model.py",
     "start": "uvicorn server.app:app --host 0.0.0.0 --port ${PORT:-8000}"
   },
   "keywords": ["fintech", "credit-scoring", "shap", "fastapi"],
