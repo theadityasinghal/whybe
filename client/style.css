@@ -1,0 +1,722 @@
+/* ==========================================================================
+   EquiScore AI — Strict Monochrome Black & White Geist Design System
+   Philosophy Reference: dexelwebsite/css/pages/home.css & tokens.css
+   Theme: Stark Dark Mode (Monochrome, Zero Glassmorphism, Solid Boxes)
+   ========================================================================== */
+
+:root {
+  /* STARK BLACK THEME TOKENS */
+  --canvas: #000000;
+  --canvas-elevated: #0a0a0a;
+  --canvas-card: #0e0e0e;
+  --canvas-subtle: #161616;
+  --hairline: #222222;
+  --hairline-soft: #181818;
+  --hairline-bright: #333333;
+  
+  --ink: #ffffff;
+  --body: #a1a1a1;
+  --mute: #666666;
+  --faint: #3d3d3d;
+  
+  --primary: #ffffff;
+  --on-primary: #000000;
+  
+  /* Semantic Accent Accents (Restrained, Crisp, Non-neon) */
+  --accent-green: #22c55e;
+  --accent-green-bg: rgba(34, 197, 94, 0.1);
+  --accent-green-border: rgba(34, 197, 94, 0.3);
+  
+  --accent-amber: #f59e0b;
+  --accent-amber-bg: rgba(245, 158, 11, 0.1);
+  --accent-amber-border: rgba(245, 158, 11, 0.3);
+  
+  --accent-red: #ef4444;
+  --accent-red-bg: rgba(239, 68, 68, 0.1);
+  --accent-red-border: rgba(239, 68, 68, 0.3);
+
+  /* Typography */
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Radius Scale */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 100px;
+
+  /* Spacing Scale */
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  --transition: all 0.15s ease;
+}
+
+/* Zero Glassmorphism — Absolutely Solid Boxes */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-bottom: 60px;
+}
+
+/* ==========================================================================
+   HEADER / NAVBAR (Dexel 100% Solid Nav)
+   ========================================================================== */
+.navbar {
+  background-color: var(--canvas);
+  border-bottom: 1px solid var(--hairline);
+  padding: 14px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 20px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--ink);
+  color: var(--canvas);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  letter-spacing: -0.05em;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  font-size: 0.8rem;
+  color: var(--body);
+  letter-spacing: -0.01em;
+}
+
+.nav-presets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preset-label {
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--mute);
+  margin-right: 4px;
+}
+
+.btn-preset {
+  background-color: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  color: var(--body);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.btn-preset:hover {
+  background-color: var(--hairline-soft);
+  border-color: var(--hairline-bright);
+  color: var(--ink);
+}
+
+.btn-preset:active {
+  background-color: var(--canvas);
+}
+
+/* ==========================================================================
+   MAIN LAYOUT (Split 2-Column Desktop Grid)
+   ========================================================================== */
+.main-container {
+  max-width: 1400px;
+  margin: 28px auto 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1.18fr 0.82fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.section-subtext {
+  font-size: 0.85rem;
+  color: var(--body);
+}
+
+/* ==========================================================================
+   CARDS (Dexel Zero Glass Solid Card Standards)
+   ========================================================================== */
+.card {
+  background-color: var(--canvas-card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 22px;
+  position: relative;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--hairline-soft);
+  gap: 12px;
+}
+
+.card-title {
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.card-counter {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--mute);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.card-subtitle {
+  font-size: 0.8rem;
+  color: var(--body);
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   FORM CONTROLS & USER-FRIENDLY HINTS
+   ========================================================================== */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.label-row label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Explicit Limits Tag */
+.limit-tag {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--mute);
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline-soft);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* Interactive Info Tooltip Button */
+.info-btn {
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  color: var(--body);
+  width: 17px;
+  height: 17px;
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.info-btn:hover,
+.info-btn:focus-visible {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--hairline-soft);
+  outline: none;
+}
+
+.slider-val {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Inputs & Selects */
+input[type="number"],
+select {
+  background-color: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  padding: 9px 12px;
+  outline: none;
+  transition: var(--transition);
+  width: 100%;
+}
+
+input[type="number"]:focus,
+select:focus {
+  border-color: var(--ink);
+  background-color: var(--canvas-elevated);
+}
+
+select {
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+/* Range Inputs */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--hairline);
+  border-radius: 4px;
+  outline: none;
+  margin: 10px 0 6px 0;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ink);
+  cursor: pointer;
+  border: 2px solid var(--canvas);
+  transition: transform 0.1s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ink);
+  cursor: pointer;
+  border: 2px solid var(--canvas);
+}
+
+/* ==========================================================================
+   RESULTS SECTION
+   ========================================================================== */
+.results-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 80px;
+}
+
+/* Score Card */
+.score-card {
+  text-align: center;
+  background: var(--canvas-card);
+  border: 1px solid var(--hairline);
+  padding: 24px;
+}
+
+.score-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.score-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--body);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+}
+
+.calc-status {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--mute);
+}
+
+.score-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.score-number-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.score-number {
+  font-family: var(--font-mono);
+  font-size: 4.2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.05em;
+}
+
+.score-scale {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--mute);
+  font-weight: 500;
+}
+
+.decision-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+}
+
+.decision-pill.approved {
+  background: var(--accent-green-bg);
+  border-color: var(--accent-green-border);
+  color: var(--accent-green);
+}
+
+.decision-pill.review {
+  background: var(--accent-amber-bg);
+  border-color: var(--accent-amber-border);
+  color: var(--accent-amber);
+}
+
+.decision-pill.declined {
+  background: var(--accent-red-bg);
+  border-color: var(--accent-red-border);
+  color: var(--accent-red);
+}
+
+/* Minimal Progress Track */
+.score-track {
+  width: 100%;
+  height: 6px;
+  background: var(--hairline);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.score-fill {
+  height: 100%;
+  background: var(--ink);
+  border-radius: var(--radius-pill);
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.score-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--mute);
+  margin-bottom: 16px;
+}
+
+.recommendation-box {
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.recommendation-text {
+  font-size: 0.84rem;
+  color: var(--body);
+  line-height: 1.45;
+}
+
+/* ==========================================================================
+   FACTORS CARD (Plain Language "Why You Received This Score")
+   ========================================================================== */
+.factors-card {
+  padding: 20px;
+}
+
+.factors-section {
+  margin-bottom: 16px;
+}
+
+.factors-section:last-child {
+  margin-bottom: 0;
+}
+
+.factor-heading {
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-family: var(--font-mono);
+}
+
+.heading-icon {
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.positive-heading {
+  color: var(--accent-green);
+}
+
+.negative-heading {
+  color: var(--accent-red);
+}
+
+.factors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.factor-item {
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.factor-label {
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.factor-value {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.factor-pos .factor-value {
+  color: var(--accent-green);
+}
+
+.factor-neg .factor-value {
+  color: var(--accent-red);
+}
+
+.factor-empty {
+  font-size: 0.8rem;
+  color: var(--mute);
+  font-style: italic;
+  padding: 6px 0;
+}
+
+/* ==========================================================================
+   FAIR LENDING PROMISE (Clean 4-Tile Grid)
+   ========================================================================== */
+.trust-card {
+  padding: 20px;
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.trust-item {
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+
+.trust-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.trust-desc {
+  font-size: 0.72rem;
+  color: var(--body);
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   ACCESSIBLE GLOBAL TOOLTIP POPUP
+   ========================================================================== */
+.tooltip-popup {
+  position: absolute;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #333333;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  max-width: 280px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  transform: translateY(4px);
+  z-index: 1000;
+}
+
+.tooltip-popup.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .main-container {
+    grid-template-columns: 1fr;
+  }
+
+  .results-section {
+    position: static;
+  }
+}
+
+@media (max-width: 680px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 18px;
+    gap: 12px;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .main-container {
+    padding: 0 16px;
+    margin-top: 16px;
+  }
+
+  .score-number {
+    font-size: 3.4rem;
+  }
+
+  .trust-grid {
+    grid-template-columns: 1fr;
+  }
+}

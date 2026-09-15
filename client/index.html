@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EquiScore — Fair Alternate Credit for Everyday Workers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-theme="dark">
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-mark">ES</div>
+      <div>
+        <h1 class="brand-title">EquiScore</h1>
+        <p class="brand-subtitle">Fair loan approval based on daily work & bill discipline — no old bank history required</p>
+      </div>
+    </div>
+    <div class="nav-presets">
+      <span class="preset-label">Quick Examples:</span>
+      <button type="button" class="btn-preset" onclick="loadPersona('urban_gig_worker')">Delivery / Driver</button>
+      <button type="button" class="btn-preset" onclick="loadPersona('rural_shg_member')">Bachat Gat / SHG</button>
+      <button type="button" class="btn-preset" onclick="loadPersona('distressed_high_risk')">Irregular Income</button>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <section class="form-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-heading">Applicant Information</h2>
+          <p class="section-subtext">Fill in your daily work earnings, bill payments, and savings. Your score updates instantly.</p>
+        </div>
+      </div>
+
+      <form id="scoringForm" onsubmit="event.preventDefault();">
+        <div class="form-grid">
+
+          <!-- 1. Basic Details & Earnings -->
+          <div class="card form-card">
+            <div class="card-header">
+              <h3 class="card-title">1. Basic Details & Monthly Earnings</h3>
+              <span class="card-counter">Step 1 of 4</span>
+            </div>
+            
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="age">Your Age</label>
+                  <span class="limit-tag">Min: 18 · Max: 75 yrs</span>
+                  <button type="button" class="info-btn" aria-label="Explain Age" data-tooltip="Your age in completed years. Loan applicants must be between 18 and 75 years old.">?</button>
+                </div>
+                <input type="number" id="age" value="29" min="18" max="75" required />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="area_type">Where You Live</label>
+                  <span class="limit-tag">Select area</span>
+                  <button type="button" class="info-btn" aria-label="Explain Area" data-tooltip="Whether you live in a city (Urban), small town (Semi-Urban), or village (Rural). Living costs are evaluated accordingly.">?</button>
+                </div>
+                <select id="area_type">
+                  <option value="Urban">City (Urban)</option>
+                  <option value="Semi-Urban">Town (Semi-Urban)</option>
+                  <option value="Rural">Village (Rural)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="monthly_income_inr">Total Monthly Earnings (₹)</label>
+                  <span class="limit-tag">₹0 – ₹5,00,000</span>
+                  <button type="button" class="info-btn" aria-label="Explain Monthly Income" data-tooltip="Total monthly cash or bank earnings from your primary trade, daily wages, shop, or job.">?</button>
+                </div>
+                <input type="number" id="monthly_income_inr" value="28500" min="0" max="500000" step="500" required />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="gig_monthly_earnings">Gig / Daily App Earnings (₹)</label>
+                  <span class="limit-tag">₹0 – ₹2,00,000</span>
+                  <button type="button" class="info-btn" aria-label="Explain Gig Earnings" data-tooltip="Monthly earnings specifically from app platforms like Zomato, Swiggy, Uber, Ola, Urban Company, or Porter. Enter 0 if you don't do app work.">?</button>
+                </div>
+                <input type="number" id="gig_monthly_earnings" value="24000" min="0" max="200000" step="500" />
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label-row">
+                <label for="gig_platform_rating">App Rating (Stars)</label>
+                <span class="limit-tag">0.0 – 5.0 stars</span>
+                <button type="button" class="info-btn" aria-label="Explain Platform Rating" data-tooltip="Your average customer service rating on your delivery or driver app. Higher star ratings reflect reliable work habits.">?</button>
+              </div>
+              <input type="number" step="0.1" id="gig_platform_rating" value="4.8" min="0" max="5" />
+            </div>
+          </div>
+
+          <!-- 2. Phone Recharge & Daily Bills -->
+          <div class="card form-card">
+            <div class="card-header">
+              <h3 class="card-title">2. Phone Recharge & Daily Bills</h3>
+              <span class="card-counter">Step 2 of 4</span>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="mobile_recharge_consistency_score">
+                    Phone Recharge Regularity: <span id="recharge_cons_val" class="slider-val">95%</span>
+                  </label>
+                  <span class="limit-tag">0% – 100%</span>
+                  <button type="button" class="info-btn" aria-label="Explain Recharge Regularity" data-tooltip="How reliably you keep your mobile number active with timely recharges before the plan expires.">?</button>
+                </div>
+                <input type="range" id="mobile_recharge_consistency_score" min="0" max="1" step="0.05" value="0.95" oninput="updateSliderPct('recharge_cons_val', this.value)" />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="mobile_recharge_lapse_days_max">Max Days Phone Stayed Expired</label>
+                  <span class="limit-tag">0 – 90 days</span>
+                  <button type="button" class="info-btn" aria-label="Explain Recharge Lapse" data-tooltip="The longest number of consecutive days your SIM card went without any recharge pack. Fewer days shows steady cash flow.">?</button>
+                </div>
+                <input type="number" id="mobile_recharge_lapse_days_max" value="5" min="0" max="90" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="utility_bills_on_time_pct">
+                    Bills Paid on Time: <span id="util_ontime_val" class="slider-val">94%</span>
+                  </label>
+                  <span class="limit-tag">0% – 100%</span>
+                  <button type="button" class="info-btn" aria-label="Explain On-Time Bills" data-tooltip="Percentage of your electricity, water, and cylinder gas bills paid before the due date. Timely bill payments boost your score.">?</button>
+                </div>
+                <input type="range" id="utility_bills_on_time_pct" min="0" max="1" step="0.02" value="0.94" oninput="updateSliderPct('util_ontime_val', this.value)" />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="electricity_bill_avg_amount">Average Electricity Bill (₹)</label>
+                  <span class="limit-tag">₹0 – ₹15,000</span>
+                  <button type="button" class="info-btn" aria-label="Explain Electricity Bill" data-tooltip="Your average monthly electricity bill payment. Demonstrates household stability.">?</button>
+                </div>
+                <input type="number" id="electricity_bill_avg_amount" value="1850" min="0" max="15000" step="50" />
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label-row">
+                <label for="telecom_bill_late_payments">Late Phone Bills in Last Year</label>
+                <span class="limit-tag">0 – 12 times</span>
+                <button type="button" class="info-btn" aria-label="Explain Late Phone Bills" data-tooltip="Number of times your phone or broadband payment was late in the past 12 months. 0 late payments is best.">?</button>
+              </div>
+              <input type="number" id="telecom_bill_late_payments" value="0" min="0" max="12" />
+            </div>
+          </div>
+
+          <!-- 3. Phone Payments (UPI) & Banking -->
+          <div class="card form-card">
+            <div class="card-header">
+              <h3 class="card-title">3. Phone Payments (UPI) & Digital Habits</h3>
+              <span class="card-counter">Step 3 of 4</span>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="upi_monthly_avg_txn_count">Monthly UPI Payments Made</label>
+                  <span class="limit-tag">0 – 500 times</span>
+                  <button type="button" class="info-btn" aria-label="Explain UPI Count" data-tooltip="How many times per month you scan shop QR codes or send money via PhonePe, GPay, or Paytm. Regular transactions demonstrate active livelihood.">?</button>
+                </div>
+                <input type="number" id="upi_monthly_avg_txn_count" value="85" min="0" max="500" />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="upi_avg_txn_amount">Average Payment Amount (₹)</label>
+                  <span class="limit-tag">₹0 – ₹50,000</span>
+                  <button type="button" class="info-btn" aria-label="Explain UPI Amount" data-tooltip="The typical amount per payment (e.g. ₹50 for tea/food, ₹300 for petrol, or ₹1,000 for supplies).">?</button>
+                </div>
+                <input type="number" id="upi_avg_txn_amount" value="340" min="0" max="50000" step="10" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="upi_failed_txn_ratio">
+                    Payment Failure Rate: <span id="upi_failed_val" class="slider-val">2%</span>
+                  </label>
+                  <span class="limit-tag">0% – 50%</span>
+                  <button type="button" class="info-btn" aria-label="Explain Failed UPI" data-tooltip="How often your UPI payments fail because there is insufficient balance in your account. Keeping this close to 0% proves financial discipline.">?</button>
+                </div>
+                <input type="range" id="upi_failed_txn_ratio" min="0" max="0.5" step="0.01" value="0.02" oninput="updateSliderPct('upi_failed_val', this.value)" />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="banking_app_login_frequency_monthly">Bank App Checks per Month</label>
+                  <span class="limit-tag">0 – 120 times</span>
+                  <button type="button" class="info-btn" aria-label="Explain Banking Logins" data-tooltip="How often you open your mobile banking, passbook, or mini-statement app to check your account balance.">?</button>
+                </div>
+                <input type="number" id="banking_app_login_frequency_monthly" value="45" min="0" max="120" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="fintech_apps_count">Payment & Money Apps on Phone</label>
+                  <span class="limit-tag">0 – 15 apps</span>
+                  <button type="button" class="info-btn" aria-label="Explain Fintech Apps" data-tooltip="Number of digital finance apps you actively use (e.g. PhonePe, GPay, Paytm, BHIM, digi-locker).">?</button>
+                </div>
+                <input type="number" id="fintech_apps_count" value="5" min="0" max="15" />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="monthly_data_usage_gb">Monthly Internet Data (GB)</label>
+                  <span class="limit-tag">0 – 100 GB</span>
+                  <button type="button" class="info-btn" aria-label="Explain Data Usage" data-tooltip="Monthly mobile internet used. Shows your level of digital connectivity and smartphone activity.">?</button>
+                </div>
+                <input type="number" step="0.5" id="monthly_data_usage_gb" value="18.5" min="0" max="100" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Group Savings & Past Loans -->
+          <div class="card form-card">
+            <div class="card-header">
+              <h3 class="card-title">4. Savings, Rent & Community Support</h3>
+              <span class="card-counter">Step 4 of 4</span>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="cooperative_meeting_attendance_pct">
+                    Bachat Gat / Co-op Attendance: <span id="coop_att_val" class="slider-val">0%</span>
+                  </label>
+                  <span class="limit-tag">0% – 100%</span>
+                  <button type="button" class="info-btn" aria-label="Explain Co-op Attendance" data-tooltip="How regularly you attend village Self-Help Group (SHG / Bachat Gat), dairy cooperative, or community committee meetings.">?</button>
+                </div>
+                <input type="range" id="cooperative_meeting_attendance_pct" min="0" max="1" step="0.05" value="0.00" oninput="updateSliderPct('coop_att_val', this.value)" />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="shg_savings_amount_inr">Bachat Gat / SHG Savings (₹)</label>
+                  <span class="limit-tag">₹0 – ₹2,00,000</span>
+                  <button type="button" class="info-btn" aria-label="Explain SHG Savings" data-tooltip="Total money you have accumulated and deposited in your local women's or men's self-help savings group.">?</button>
+                </div>
+                <input type="number" id="shg_savings_amount_inr" value="0" min="0" max="200000" step="500" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="microfinance_loans_repaid_count">Small Group Loans Repaid</label>
+                  <span class="limit-tag">0 – 20 loans</span>
+                  <button type="button" class="info-btn" aria-label="Explain Loans Repaid" data-tooltip="Number of small community loans or microfinance cycles you took in the past and successfully paid back in full.">?</button>
+                </div>
+                <input type="number" id="microfinance_loans_repaid_count" value="2" min="0" max="20" />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="microfinance_default_rate">
+                    Missed Loan Payment Rate: <span id="mfi_def_val" class="slider-val">0%</span>
+                  </label>
+                  <span class="limit-tag">0% – 50%</span>
+                  <button type="button" class="info-btn" aria-label="Explain Loan Default Rate" data-tooltip="Percentage of past microfinance installments you failed to pay. 0% means you never missed an installment.">?</button>
+                </div>
+                <input type="range" id="microfinance_default_rate" min="0" max="0.5" step="0.01" value="0.00" oninput="updateSliderPct('mfi_def_val', this.value)" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="jandhan_avg_balance">Jan Dhan / Bank Balance (₹)</label>
+                  <span class="limit-tag">₹0 – ₹50,000</span>
+                  <button type="button" class="info-btn" aria-label="Explain Bank Balance" data-tooltip="Your average maintained savings in your Jan Dhan or primary zero-balance bank account.">?</button>
+                </div>
+                <input type="number" id="jandhan_avg_balance" value="2500" min="0" max="50000" step="100" />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="jandhan_zero_balance_months">Months with ₹0 Balance</label>
+                  <span class="limit-tag">0 – 12 months</span>
+                  <button type="button" class="info-btn" aria-label="Explain Zero Balance Months" data-tooltip="Number of months in the past year when your bank account balance touched ₹0. Maintaining some balance shows emergency preparedness.">?</button>
+                </div>
+                <input type="number" id="jandhan_zero_balance_months" value="0" min="0" max="12" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="rent_on_time_payment_pct">
+                    Rent Paid on Time: <span id="rent_ontime_val" class="slider-val">95%</span>
+                  </label>
+                  <span class="limit-tag">0% – 100%</span>
+                  <button type="button" class="info-btn" aria-label="Explain Rent Timeliness" data-tooltip="Percentage of your monthly home or shop rent paid to your landlord without delay.">?</button>
+                </div>
+                <input type="range" id="rent_on_time_payment_pct" min="0" max="1" step="0.05" value="0.95" oninput="updateSliderPct('rent_ontime_val', this.value)" />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="rent_to_income_ratio">
+                    Rent Share of Income: <span id="rent_ratio_val" class="slider-val">22%</span>
+                  </label>
+                  <span class="limit-tag">0% – 80%</span>
+                  <button type="button" class="info-btn" aria-label="Explain Rent Ratio" data-tooltip="What percentage of your monthly income is spent on paying rent. Lower share (e.g. under 30%) leaves you with more money for loan installments.">?</button>
+                </div>
+                <input type="range" id="rent_to_income_ratio" min="0" max="0.8" step="0.02" value="0.22" oninput="updateSliderPct('rent_ratio_val', this.value)" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <div class="label-row">
+                  <label for="social_referral_count">Community Referrals</label>
+                  <span class="limit-tag">0 – 20 people</span>
+                  <button type="button" class="info-btn" aria-label="Explain Referrals" data-tooltip="Number of respectable fellow workers, panchayat members, or group leaders who can vouch for your honesty.">?</button>
+                </div>
+                <input type="number" id="social_referral_count" value="4" min="0" max="20" />
+              </div>
+
+              <div class="field">
+                <div class="label-row">
+                  <label for="insurance_policy_count">Active Insurance Schemes</label>
+                  <span class="limit-tag">0 – 5 policies</span>
+                  <button type="button" class="info-btn" aria-label="Explain Insurance" data-tooltip="Number of active welfare covers like PM Suraksha Bima (PMSBY), Jeevan Jyoti (PMJJBY), Ayushman Bharat card, or vehicle insurance.">?</button>
+                </div>
+                <input type="number" id="insurance_policy_count" value="1" min="0" max="5" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </section>
+
+    <!-- Score & Results Section -->
+    <section class="results-section">
+      <!-- Real-Time Score Card -->
+      <div class="card score-card">
+        <div class="score-card-header">
+          <span class="score-title">Your Credit Eligibility</span>
+          <span class="calc-status" id="calcStatus">Score Range: 300 to 850</span>
+        </div>
+
+        <div class="score-main">
+          <div class="score-number-wrap">
+            <span class="score-number" id="scoreVal">--</span>
+            <span class="score-scale">/ 850</span>
+          </div>
+          <div class="decision-pill" id="decisionBadge">CALCULATING...</div>
+        </div>
+
+        <div class="score-track">
+          <div class="score-fill" id="meterFill" style="width: 0%;"></div>
+        </div>
+
+        <div class="score-range-labels">
+          <span>300 (Needs Work)</span>
+          <span>580 (Fair)</span>
+          <span>680+ (Strong Approval)</span>
+        </div>
+
+        <div class="recommendation-box">
+          <p class="recommendation-text" id="scoreRecommendation">
+            Connecting to eligibility service...
+          </p>
+        </div>
+      </div>
+
+      <!-- Simple Score Factors -->
+      <div class="card factors-card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Why You Received This Score</h3>
+            <p class="card-subtitle">Clear breakdown of what helps you and what to improve.</p>
+          </div>
+        </div>
+
+        <div class="factors-section">
+          <h4 class="factor-heading positive-heading">
+            <span class="heading-icon">✓</span> What Is Helping Your Score
+          </h4>
+          <div id="boostersList" class="factors-list">
+            <div class="factor-empty">Calculating factors...</div>
+          </div>
+        </div>
+
+        <div class="factors-section">
+          <h4 class="factor-heading negative-heading">
+            <span class="heading-icon">!</span> What Needs Attention
+          </h4>
+          <div id="adverseList" class="factors-list">
+            <div class="factor-empty">Calculating factors...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simple Trust & Fair Lending Promise -->
+      <div class="card trust-card">
+        <h3 class="card-title">Our Fair Lending Promise</h3>
+        <p class="card-subtitle">Transparent standards protecting every hardworking borrower.</p>
+        
+        <div class="trust-grid">
+          <div class="trust-item">
+            <div class="trust-title">100% Unbiased</div>
+            <div class="trust-desc">No human favoritism. Evaluated strictly on your everyday discipline.</div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-title">No Old Loans Needed</div>
+            <div class="trust-desc">Never had a bank loan or credit card? You still get a fair score.</div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-title">Zero Paperwork Delay</div>
+            <div class="trust-desc">Calculated automatically in seconds without visiting a bank branch.</div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-title">Safe & Protected</div>
+            <div class="trust-desc">Your payment and personal details are private and never sold.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Global Tooltip Element -->
+  <div id="globalTooltip" class="tooltip-popup" role="tooltip" aria-hidden="true"></div>
+
+  <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "equiscore-ai",
+  "version": "1.0.0",
+  "description": "AI-Powered Alternate Credit Scoring with TreeSHAP Explainability",
+  "scripts": {
+    "server": "export MPLCONFIGDIR=/tmp/mpl_cache && ./.venv/bin/uvicorn server.app:app --host 127.0.0.1 --port 8000 --reload",
+    "client": "python3 -m http.server 3000 --directory client",
+    "dev": "npm run server & npm run client"
+  },
+  "keywords": ["fintech", "credit-scoring", "shap", "fastapi"],
+  "author": "EquiScore Team",
+  "license": "MIT"
+}
