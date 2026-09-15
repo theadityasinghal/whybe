@@ -1,6 +1,7 @@
-const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+// Relative path in production (unified server on Render) or localhost:8000 when dev client runs on port 3000
+const API_URL = (window.location.port === "3000")
   ? "http://127.0.0.1:8000"
-  : (localStorage.getItem("API_URL") || "https://whybe-backend.onrender.com");
+  : "";
 
 const PRESETS = {
   urban_gig_worker: {
@@ -175,8 +176,12 @@ async function evaluateApplicant() {
     }
 
     const data = await res.json();
+    currentApplicantData = payload;
+    currentScoreData = data;
     renderScore(data);
     renderFactors(data);
+    syncSimulatorBaseline(payload, data);
+    debouncedTriggerCopilot();
     if (statusEl) statusEl.innerText = "Score Range: 300 to 850";
   } catch (err) {
     console.error("Backend connection failed:", err);
@@ -338,6 +343,410 @@ function initTooltips() {
   });
 
   window.addEventListener('scroll', hideTooltip, { passive: true });
+}
+
+// ==========================================================================
+// AI COPILOT ENGINE (Google Gemini Flash & Multilingual)
+// ==========================================================================
+let copilotLanguage = "en";
+let currentApplicantData = null;
+let currentScoreData = null;
+let copilotChatHistory = [];
+let copilotFetchTimer = null;
+let simDebounceTimer = null;
+
+function setCopilotLanguage(lang) {
+  copilotLanguage = lang;
+  const enBtn = document.getElementById('langEnBtn');
+  const hiBtn = document.getElementById('langHiBtn');
+  if (enBtn && hiBtn) {
+    if (lang === 'en') {
+      enBtn.classList.add('active');
+      hiBtn.classList.remove('active');
+    } else {
+      hiBtn.classList.add('active');
+      enBtn.classList.remove('active');
+    }
+  }
+  if (currentApplicantData) {
+    fetchCopilotExplanation();
+  }
+}
+
+function debouncedTriggerCopilot() {
+  clearTimeout(copilotFetchTimer);
+  copilotFetchTimer = setTimeout(fetchCopilotExplanation, 800);
+}
+
+async function fetchCopilotExplanation() {
+  const container = document.getElementById('copilotExplanation');
+  if (!container || !currentApplicantData) return;
+
+  const loadingText = copilotLanguage === 'hi'
+    ? 'कृत्रिम बुद्धिमत्ता (Gemini AI) द्वारा क्रेडिट विश्लेषण तैयार किया जा रहा है...'
+    : 'Generating plain-language credit analysis via Gemini AI...';
+
+  container.innerHTML = `
+    <div class="copilot-loading">
+      <span class="spinner-dot"></span> ${loadingText}
+    </div>
+  `;
+
+  try {
+    const res = await fetch(`${API_URL}/api/copilot/explain`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        applicant: currentApplicantData,
+        language: copilotLanguage
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error(`Copilot API responded with status ${res.status}`);
+    }
+
+    const json = await res.json();
+    if (!json.success || !json.data) {
+      throw new Error(json.error || "Copilot response failed");
+    }
+
+    renderCopilotExplanation(json.data);
+  } catch (err) {
+    console.error("Copilot fetch failed:", err);
+    container.innerHTML = `
+      <div style="color: var(--mute); font-size: 0.85rem;">
+        ${copilotLanguage === 'hi' ? 'AI विश्लेषण लोड करने में असमर्थ। कृपया पुनः प्रयास करें।' : 'Unable to load AI analysis right now. Please try again.'}
+      </div>
+    `;
+  }
+}
+
+function renderCopilotExplanation(data) {
+  const container = document.getElementById('copilotExplanation');
+  if (!container) return;
+
+  const strengthsHeader = copilotLanguage === 'hi' ? 'आपकी मजबूत आदतें' : 'Key Credit Strengths';
+  const actionsHeader = copilotLanguage === 'hi' ? 'स्कोर बढ़ाने के आसान उपाय' : 'High-Impact Steps for 30-60 Days';
+  const loanHeader = copilotLanguage === 'hi' ? 'ऋण पात्रता मार्गदर्शन' : 'Loan Guidance';
+
+  let strengthsHtml = '';
+  if (data.key_strengths && data.key_strengths.length > 0) {
+    strengthsHtml = `
+      <div class="copilot-strengths-wrap">
+        <div class="copilot-section-label">${strengthsHeader}</div>
+        <ul class="copilot-bullet-list">
+          ${data.key_strengths.map(s => `<li class="copilot-bullet-item">${s}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+
+  let actionsHtml = '';
+  if (data.actionable_steps && data.actionable_steps.length > 0) {
+    actionsHtml = `
+      <div class="copilot-strengths-wrap">
+        <div class="copilot-section-label">${actionsHeader}</div>
+        <ul class="copilot-bullet-list">
+          ${data.actionable_steps.map(s => `<li class="copilot-bullet-item">${s}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+
+  let loanHtml = '';
+  if (data.loan_guidance) {
+    loanHtml = `
+      <div class="copilot-loan-box">
+        <span>✓</span>
+        <div><strong>${loanHeader}:</strong> ${data.loan_guidance}</div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="copilot-summary-text">${data.summary || ''}</div>
+    ${strengthsHtml}
+    ${actionsHtml}
+    ${loanHtml}
+  `;
+}
+
+function sendSuggestedQuestion(question) {
+  const input = document.getElementById('copilotQueryInput');
+  if (input) {
+    input.value = question;
+    handleCopilotChat(new Event('submit'));
+  }
+}
+
+async function handleCopilotChat(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const input = document.getElementById('copilotQueryInput');
+  const thread = document.getElementById('chatThread');
+  if (!input || !thread || !currentApplicantData) return;
+
+  const query = input.value.trim();
+  if (!query) return;
+
+  input.value = '';
+
+  // Append user bubble
+  const userBubble = document.createElement('div');
+  userBubble.className = 'chat-bubble user';
+  userBubble.innerText = query;
+  thread.appendChild(userBubble);
+
+  // Append bot loading bubble
+  const botBubble = document.createElement('div');
+  botBubble.className = 'chat-bubble bot';
+  botBubble.innerHTML = copilotLanguage === 'hi' ? 'सोच रहे हैं...' : 'Consulting underwriting model...';
+  thread.appendChild(botBubble);
+  thread.scrollTop = thread.scrollHeight;
+
+  try {
+    const res = await fetch(`${API_URL}/api/copilot/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        applicant: currentApplicantData,
+        query: query,
+        history: copilotChatHistory,
+        language: copilotLanguage
+      })
+    });
+
+    const json = await res.json();
+    if (json.success && json.data) {
+      botBubble.innerText = json.data.answer;
+      copilotChatHistory.push({ role: 'user', content: query });
+      copilotChatHistory.push({ role: 'assistant', content: json.data.answer });
+    } else {
+      botBubble.innerText = json.error || 'Sorry, could not process that question right now.';
+    }
+  } catch (err) {
+    botBubble.innerText = 'Network connection failed. Please verify the server is running.';
+  }
+  thread.scrollTop = thread.scrollHeight;
+}
+
+// ==========================================================================
+// WHAT-IF SIMULATOR & GOAL SEEKER
+// ==========================================================================
+function switchSimTab(tab) {
+  const slidersTab = document.getElementById('simSlidersTab');
+  const goalTab = document.getElementById('simGoalSeekTab');
+  const simTabBtn = document.getElementById('simTabBtn');
+  const goalTabBtn = document.getElementById('goalTabBtn');
+
+  if (tab === 'sliders') {
+    if (slidersTab) slidersTab.style.display = 'block';
+    if (goalTab) goalTab.style.display = 'none';
+    if (simTabBtn) simTabBtn.classList.add('active');
+    if (goalTabBtn) goalTabBtn.classList.remove('active');
+  } else {
+    if (slidersTab) slidersTab.style.display = 'none';
+    if (goalTab) goalTab.style.display = 'block';
+    if (simTabBtn) simTabBtn.classList.remove('active');
+    if (goalTabBtn) goalTabBtn.classList.add('active');
+  }
+}
+
+function syncSimulatorBaseline(applicant, scoreData) {
+  const curEl = document.getElementById('simCurrentScore');
+  const projEl = document.getElementById('simProjectedScore');
+  const badgeEl = document.getElementById('simDeltaBadge');
+
+  if (curEl) curEl.innerText = scoreData.score;
+  if (projEl) projEl.innerText = scoreData.score;
+  if (badgeEl) {
+    badgeEl.innerText = "+0 pts";
+    badgeEl.className = "delta-badge";
+  }
+
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  };
+
+  setVal('sim_util', applicant.utility_bills_on_time_pct);
+  setVal('sim_upi_fail', applicant.upi_failed_txn_ratio);
+  setVal('sim_lapse', applicant.mobile_recharge_lapse_days_max);
+  setVal('sim_balance', applicant.jandhan_avg_balance);
+  setVal('sim_rent', applicant.rent_on_time_payment_pct);
+
+  updateSimLabels();
+}
+
+function updateSimLabels() {
+  const getVal = id => {
+    const el = document.getElementById(id);
+    return el ? el.value : 0;
+  };
+
+  const setLabel = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = text;
+  };
+
+  setLabel('sim_util_val', `${Math.round(parseFloat(getVal('sim_util')) * 100)}%`);
+  setLabel('sim_upi_fail_val', `${Math.round(parseFloat(getVal('sim_upi_fail')) * 100)}%`);
+  setLabel('sim_lapse_val', `${parseInt(getVal('sim_lapse'), 10)} d`);
+  setLabel('sim_balance_val', `₹${parseInt(getVal('sim_balance'), 10).toLocaleString('en-IN')}`);
+  setLabel('sim_rent_val', `${Math.round(parseFloat(getVal('sim_rent')) * 100)}%`);
+}
+
+function onSimSliderChange() {
+  updateSimLabels();
+  clearTimeout(simDebounceTimer);
+  simDebounceTimer = setTimeout(runSimulation, 150);
+}
+
+async function runSimulation() {
+  if (!currentApplicantData) return;
+
+  const mods = {
+    utility_bills_on_time_pct: parseFloat(document.getElementById('sim_util').value),
+    upi_failed_txn_ratio: parseFloat(document.getElementById('sim_upi_fail').value),
+    mobile_recharge_lapse_days_max: parseInt(document.getElementById('sim_lapse').value, 10),
+    jandhan_avg_balance: parseFloat(document.getElementById('sim_balance').value),
+    rent_on_time_payment_pct: parseFloat(document.getElementById('sim_rent').value)
+  };
+
+  try {
+    const res = await fetch(`${API_URL}/api/simulate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        original: currentApplicantData,
+        modifications: mods
+      })
+    });
+
+    const json = await res.json();
+    if (json.success && json.data) {
+      const d = json.data;
+      const projEl = document.getElementById('simProjectedScore');
+      const badgeEl = document.getElementById('simDeltaBadge');
+
+      if (projEl) projEl.innerText = d.simulated_score;
+      if (badgeEl) {
+        if (d.score_delta >= 0) {
+          badgeEl.innerText = `+${d.score_delta} pts`;
+          badgeEl.className = 'delta-badge';
+        } else {
+          badgeEl.innerText = `${d.score_delta} pts`;
+          badgeEl.className = 'delta-badge negative';
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Simulation failed:", err);
+  }
+}
+
+function resetSimSliders() {
+  if (currentApplicantData && currentScoreData) {
+    syncSimulatorBaseline(currentApplicantData, currentScoreData);
+  }
+}
+
+function applySimulationToForm() {
+  const setFormVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  };
+
+  const util = parseFloat(document.getElementById('sim_util').value);
+  const upiFail = parseFloat(document.getElementById('sim_upi_fail').value);
+  const lapse = parseInt(document.getElementById('sim_lapse').value, 10);
+  const balance = parseFloat(document.getElementById('sim_balance').value);
+  const rent = parseFloat(document.getElementById('sim_rent').value);
+
+  setFormVal('utility_bills_on_time_pct', util);
+  setFormVal('upi_failed_txn_ratio', upiFail);
+  setFormVal('mobile_recharge_lapse_days_max', lapse);
+  setFormVal('jandhan_avg_balance', balance);
+  setFormVal('rent_on_time_payment_pct', rent);
+
+  updateSliderPct('util_ontime_val', util);
+  updateSliderPct('upi_failed_val', upiFail);
+  updateSliderPct('rent_ontime_val', rent);
+
+  evaluateApplicant();
+}
+
+async function triggerGoalSeek() {
+  const container = document.getElementById('goalSeekResults');
+  const targetSelect = document.getElementById('goalTargetInput');
+  if (!container || !targetSelect || !currentApplicantData) return;
+
+  const targetScore = parseInt(targetSelect.value, 10);
+
+  container.innerHTML = `
+    <div class="goal-placeholder">
+      <span class="spinner-dot"></span> Calculating optimal path to score ${targetScore}...
+    </div>
+  `;
+
+  try {
+    const res = await fetch(`${API_URL}/api/simulate/goal-seek`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        applicant: currentApplicantData,
+        target_score: targetScore,
+        language: copilotLanguage
+      })
+    });
+
+    const json = await res.json();
+    if (json.success && json.data) {
+      renderGoalSeekRoadmap(json.data);
+    } else {
+      container.innerHTML = `<div class="goal-placeholder">Could not calculate roadmap.</div>`;
+    }
+  } catch (err) {
+    container.innerHTML = `<div class="goal-placeholder">Connection error. Please try again.</div>`;
+  }
+}
+
+function renderGoalSeekRoadmap(data) {
+  const container = document.getElementById('goalSeekResults');
+  if (!container) return;
+
+  if (data.roadmap.length === 0) {
+    container.innerHTML = `
+      <div class="roadmap-summary-box">
+        ✓ ${data.message || (copilotLanguage === 'hi' ? 'आवेदक पहले से ही इस लक्ष्य को पूरा करता है!' : 'Applicant already meets this target score!')}
+      </div>
+    `;
+    return;
+  }
+
+  const stepsHtml = data.roadmap.map(st => `
+    <div class="roadmap-step-card">
+      <div class="step-card-header">
+        <span class="step-badge">Step ${st.step_number}</span>
+        <span class="step-points">+${st.estimated_points} pts</span>
+      </div>
+      <div class="step-action-text">${st.action}</div>
+      <div class="step-meta-row">
+        <span>⏱ ${st.timeframe}</span>
+        <span>•</span>
+        <span>Level: ${st.difficulty}</span>
+        <span>•</span>
+        <span>Projected: ${st.cumulative_score}</span>
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = `
+    <div class="roadmap-summary-box">
+      ${data.summary}
+    </div>
+    ${stepsHtml}
+  `;
 }
 
 window.addEventListener('DOMContentLoaded', () => {

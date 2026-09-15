@@ -6,6 +6,7 @@ import os
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/mpl_cache")
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from server.model import CreditEngine
@@ -54,9 +55,40 @@ class ApplicantInput(BaseModel):
     social_referral_count: int = Field(default=0, ge=0)
     insurance_policy_count: int = Field(default=0, ge=0)
 
-@app.get("/")
+from typing import Optional, List, Dict, Any
+from server.copilot import CopilotEngine
+from server.simulate import SimulationEngine
+
+copilot = CopilotEngine()
+simulator = SimulationEngine(engine)
+
+class CopilotExplainRequest(BaseModel):
+    applicant: ApplicantInput
+    language: str = Field(default="en")
+
+class CopilotChatRequest(BaseModel):
+    applicant: ApplicantInput
+    query: str
+    history: Optional[List[Dict[str, str]]] = Field(default=[])
+    language: str = Field(default="en")
+
+class SimulateRequest(BaseModel):
+    original: ApplicantInput
+    modifications: Dict[str, Any]
+
+class GoalSeekRequest(BaseModel):
+    applicant: ApplicantInput
+    target_score: int = Field(default=680)
+    language: str = Field(default="en")
+
+@app.get("/api/health")
 def health():
-    return {"status": "online", "model": "In-Memory Monotonic HistGradientBoosting"}
+    return {
+        "status": "online",
+        "model": "In-Memory Monotonic HistGradientBoosting",
+        "copilot": f"Google Gemini ({copilot.model_name})",
+        "gemini_configured": bool(copilot.api_key)
+    }
 
 @app.post("/api/score")
 def score(applicant: ApplicantInput):
@@ -76,3 +108,65 @@ def score(applicant: ApplicantInput):
         "top_positive_factors": shap_res["top_positive"],
         "top_negative_factors": shap_res["top_negative"],
     }
+
+@app.post("/api/copilot/explain")
+def copilot_explain(req: CopilotExplainRequest):
+    data = req.applicant.model_dump()
+    res = engine.predict_score(data)
+    shap_res = explainer.explain(res["processed_matrix"])
+    
+    score_payload = {
+        "score": res["score"],
+        "approval_probability": res["approval_probability"],
+        "risk_band": res["risk_band"],
+        "decision": res["decision"],
+        "recommendation": res["recommendation"],
+        "top_positive_factors": shap_res["top_positive"],
+        "top_negative_factors": shap_res["top_negative"],
+    }
+    
+    try:
+        explanation = copilot.explain_score(score_payload, language=req.language)
+        return {"success": True, "data": explanation}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+@app.post("/api/copilot/chat")
+def copilot_chat(req: CopilotChatRequest):
+    data = req.applicant.model_dump()
+    res = engine.predict_score(data)
+    shap_res = explainer.explain(res["processed_matrix"])
+    
+    score_payload = {
+        "score": res["score"],
+        "approval_probability": res["approval_probability"],
+        "risk_band": res["risk_band"],
+        "decision": res["decision"],
+        "recommendation": res["recommendation"],
+        "top_positive_factors": shap_res["top_positive"],
+        "top_negative_factors": shap_res["top_negative"],
+    }
+    
+    try:
+        reply = copilot.chat(score_payload, query=req.query, history=req.history, language=req.language)
+        return {"success": True, "data": reply}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+@app.post("/api/simulate")
+def simulate(req: SimulateRequest):
+    orig_data = req.original.model_dump()
+    result = simulator.simulate(orig_data, req.modifications)
+    return {"success": True, "data": result}
+
+@app.post("/api/simulate/goal-seek")
+def goal_seek(req: GoalSeekRequest):
+    data = req.applicant.model_dump()
+    result = simulator.goal_seek(data, target_score=req.target_score, language=req.language)
+    return {"success": True, "data": result}
+
+# Mount static frontend console so full app runs from a single unified server
+CLIENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../client"))
+if os.path.isdir(CLIENT_DIR):
+    app.mount("/", StaticFiles(directory=CLIENT_DIR, html=True), name="client")
+

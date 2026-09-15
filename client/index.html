@@ -412,6 +412,144 @@
         </div>
       </div>
 
+      <!-- AI Credit Copilot Card -->
+      <div class="card copilot-card" id="copilotCard">
+        <div class="card-header flex-between">
+          <div class="copilot-brand-title">
+            <div class="ai-sparkle-badge">AI</div>
+            <div>
+              <h3 class="card-title">EquiScore AI Copilot</h3>
+              <p class="card-subtitle">Google Gemini 3.5 Flash-Lite · RBI Fair Practices Code Compliant</p>
+            </div>
+          </div>
+          <div class="lang-switch-group">
+            <button type="button" class="lang-pill active" id="langEnBtn" onclick="setCopilotLanguage('en')">English</button>
+            <button type="button" class="lang-pill" id="langHiBtn" onclick="setCopilotLanguage('hi')">हिंदी</button>
+          </div>
+        </div>
+
+        <div class="copilot-explanation" id="copilotExplanation">
+          <div class="copilot-loading">
+            <span class="spinner-dot"></span> Generating plain-language credit analysis...
+          </div>
+        </div>
+
+        <div class="copilot-chips" id="copilotChips">
+          <span class="chip-label">Quick Questions:</span>
+          <button type="button" class="chip-btn" onclick="sendSuggestedQuestion('Can I qualify for a ₹50,000 loan right now?')">💰 ₹50k Loan Eligibility?</button>
+          <button type="button" class="chip-btn" onclick="sendSuggestedQuestion('What is the single fastest way to increase my score?')">⚡ Fastest Score Boost?</button>
+          <button type="button" class="chip-btn" onclick="sendSuggestedQuestion('Why did my UPI or bill payments affect my score?')">📱 UPI & Bill Impact?</button>
+        </div>
+
+        <div class="copilot-chat-container">
+          <div class="chat-thread" id="chatThread">
+            <!-- Messages stream here -->
+          </div>
+          <form class="chat-input-row" id="copilotChatForm" onsubmit="handleCopilotChat(event)">
+            <input type="text" id="copilotQueryInput" placeholder="Ask anything about your loan eligibility or score..." autocomplete="off" />
+            <button type="submit" id="copilotSendBtn" class="btn-send" aria-label="Send">Send</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- What-If Simulator & Goal-Seeker Card -->
+      <div class="card simulator-card" id="simulatorCard">
+        <div class="card-header flex-between">
+          <div>
+            <h3 class="card-title">What-If Simulator & Goal Seeker</h3>
+            <p class="card-subtitle">Test habit changes or auto-generate your step-by-step roadmap to approval.</p>
+          </div>
+          <div class="tab-pill-group">
+            <button type="button" class="tab-pill active" id="simTabBtn" onclick="switchSimTab('sliders')">What-If Sliders</button>
+            <button type="button" class="tab-pill" id="goalTabBtn" onclick="switchSimTab('goalseek')">🎯 Goal-Seeker</button>
+          </div>
+        </div>
+
+        <!-- Tab 1: Sliders -->
+        <div id="simSlidersTab" class="sim-tab-content">
+          <div class="sim-delta-banner" id="simDeltaBanner">
+            <div class="delta-col">
+              <span class="delta-label">Current Score</span>
+              <span class="delta-val" id="simCurrentScore">--</span>
+            </div>
+            <div class="delta-arrow">➔</div>
+            <div class="delta-col">
+              <span class="delta-label">Simulated Score</span>
+              <span class="delta-val highlight" id="simProjectedScore">--</span>
+            </div>
+            <div class="delta-col">
+              <span class="delta-label">Net Shift</span>
+              <span class="delta-badge" id="simDeltaBadge">+0 pts</span>
+            </div>
+          </div>
+
+          <div class="sim-sliders-grid">
+            <div class="sim-control">
+              <div class="sim-label-row">
+                <label for="sim_util">On-Time Bills: <span id="sim_util_val">95%</span></label>
+              </div>
+              <input type="range" id="sim_util" min="0" max="1" step="0.02" value="0.95" oninput="onSimSliderChange()" />
+            </div>
+
+            <div class="sim-control">
+              <div class="sim-label-row">
+                <label for="sim_upi_fail">Failed UPI Ratio: <span id="sim_upi_fail_val">2%</span></label>
+              </div>
+              <input type="range" id="sim_upi_fail" min="0" max="0.5" step="0.01" value="0.02" oninput="onSimSliderChange()" />
+            </div>
+
+            <div class="sim-control">
+              <div class="sim-label-row">
+                <label for="sim_lapse">Mobile Inactive Days: <span id="sim_lapse_val">0 d</span></label>
+              </div>
+              <input type="range" id="sim_lapse" min="0" max="60" step="1" value="0" oninput="onSimSliderChange()" />
+            </div>
+
+            <div class="sim-control">
+              <div class="sim-label-row">
+                <label for="sim_balance">Bank Savings Balance: <span id="sim_balance_val">₹5,000</span></label>
+              </div>
+              <input type="range" id="sim_balance" min="0" max="25000" step="500" value="5000" oninput="onSimSliderChange()" />
+            </div>
+
+            <div class="sim-control">
+              <div class="sim-label-row">
+                <label for="sim_rent">On-Time Rent: <span id="sim_rent_val">95%</span></label>
+              </div>
+              <input type="range" id="sim_rent" min="0" max="1" step="0.05" value="0.95" oninput="onSimSliderChange()" />
+            </div>
+          </div>
+
+          <div class="sim-actions">
+            <button type="button" class="btn-secondary" onclick="resetSimSliders()">Reset Sliders</button>
+            <button type="button" class="btn-primary" onclick="applySimulationToForm()">Apply Changes to Profile</button>
+          </div>
+        </div>
+
+        <!-- Tab 2: Goal Seeker -->
+        <div id="simGoalSeekTab" class="sim-tab-content" style="display: none;">
+          <div class="goal-prompt-bar">
+            <div class="goal-input-group">
+              <label for="goalTargetInput">Target Eligibility Score:</label>
+              <select id="goalTargetInput">
+                <option value="680" selected>680 (Low Risk · Prime Loan Approval)</option>
+                <option value="720">720 (Excellent · Instant Micro-Disbursement)</option>
+                <option value="600">600 (Fair · Micro-Credit Line)</option>
+              </select>
+            </div>
+            <button type="button" class="btn-primary" id="btnRunGoalSeek" onclick="triggerGoalSeek()">
+              🎯 Calculate Action Plan
+            </button>
+          </div>
+
+          <div id="goalSeekResults" class="goal-results-container">
+            <div class="goal-placeholder">
+              Click "Calculate Action Plan" to generate your personalized 30-to-60 day steps to reach your target score.
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Simple Trust & Fair Lending Promise -->
       <div class="card trust-card">
         <h3 class="card-title">Our Fair Lending Promise</h3>

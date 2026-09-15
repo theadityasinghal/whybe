@@ -720,3 +720,473 @@ input[type="range"]::-moz-range-thumb {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   AI COPILOT & SIMULATOR / GOAL-SEEKER STYLING
+   ========================================================================== */
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.copilot-brand-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ai-sparkle-badge {
+  background: #ffffff;
+  color: #000000;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.lang-switch-group, .tab-pill-group {
+  display: flex;
+  gap: 4px;
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.lang-pill, .tab-pill {
+  background: transparent;
+  border: none;
+  color: var(--body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.lang-pill.active, .tab-pill.active {
+  background: var(--ink);
+  color: var(--on-primary);
+  font-weight: 600;
+}
+
+.copilot-explanation {
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-top: 14px;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.copilot-summary-text {
+  margin-bottom: 12px;
+  color: #f1f1f1;
+}
+
+.copilot-strengths-wrap {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--hairline);
+}
+
+.copilot-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+
+.copilot-bullet-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.copilot-bullet-item {
+  position: relative;
+  padding-left: 16px;
+  font-size: 0.85rem;
+  color: var(--body);
+}
+
+.copilot-bullet-item::before {
+  content: "•";
+  position: absolute;
+  left: 4px;
+  color: var(--accent-green);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.copilot-loan-box {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: #4ade80;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.copilot-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.chip-label {
+  font-size: 0.75rem;
+  color: var(--mute);
+  font-family: var(--font-mono);
+  margin-right: 4px;
+}
+
+.chip-btn {
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  color: var(--body);
+  font-size: 0.78rem;
+  font-family: var(--font-sans);
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.chip-btn:hover {
+  background: #222222;
+  color: var(--ink);
+  border-color: #444444;
+}
+
+.copilot-chat-container {
+  margin-top: 14px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  background: #090909;
+  overflow: hidden;
+}
+
+.chat-thread {
+  max-height: 220px;
+  min-height: 70px;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-bubble {
+  max-width: 88%;
+  padding: 9px 13px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.chat-bubble.user {
+  align-self: flex-end;
+  background: #252525;
+  color: #ffffff;
+  border: 1px solid #333333;
+}
+
+.chat-bubble.bot {
+  align-self: flex-start;
+  background: #121212;
+  color: var(--body);
+  border: 1px solid var(--hairline);
+}
+
+.chat-input-row {
+  display: flex;
+  border-top: 1px solid var(--hairline);
+  background: #0d0d0d;
+}
+
+.chat-input-row input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 10px 14px;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+  outline: none;
+}
+
+.btn-send {
+  background: var(--ink);
+  color: var(--on-primary);
+  border: none;
+  padding: 0 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-send:hover {
+  background: #e0e0e0;
+}
+
+/* Simulator & Goal-Seeker Styles */
+.sim-delta-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  margin-top: 14px;
+}
+
+.delta-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.delta-label {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--mute);
+  text-transform: uppercase;
+}
+
+.delta-val {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+
+.delta-val.highlight {
+  color: #ffffff;
+}
+
+.delta-arrow {
+  color: var(--faint);
+  font-size: 1.1rem;
+}
+
+.delta-badge {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.delta-badge.negative {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.sim-sliders-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.sim-control {
+  background: #111111;
+  border: 1px solid var(--hairline);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.sim-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--body);
+  margin-bottom: 6px;
+}
+
+.sim-label-row span {
+  font-family: var(--font-mono);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.sim-control input[type="range"] {
+  width: 100%;
+  accent-color: #ffffff;
+  cursor: pointer;
+}
+
+.sim-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--hairline);
+  color: var(--body);
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: var(--transition);
+}
+
+.btn-secondary:hover {
+  background: #1a1a1a;
+  color: var(--ink);
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--on-primary);
+  border: none;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  background: #e0e0e0;
+}
+
+/* Goal Seeker UI */
+.goal-prompt-bar {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--canvas-subtle);
+  border: 1px solid var(--hairline);
+  padding: 14px;
+  border-radius: var(--radius-md);
+}
+
+.goal-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.goal-input-group label {
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  color: var(--mute);
+  text-transform: uppercase;
+}
+
+.goal-input-group select {
+  background: #121212;
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.goal-results-container {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.goal-placeholder {
+  color: var(--mute);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 24px 16px;
+  border: 1px dashed var(--hairline);
+  border-radius: var(--radius-md);
+}
+
+.roadmap-summary-box {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: #4ade80;
+  margin-bottom: 6px;
+}
+
+.roadmap-step-card {
+  background: #111111;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.step-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.step-badge {
+  background: #222222;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.step-points {
+  font-family: var(--font-mono);
+  color: #4ade80;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.step-action-text {
+  font-size: 0.86rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.step-meta-row {
+  display: flex;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: var(--mute);
+  font-family: var(--font-mono);
+}
