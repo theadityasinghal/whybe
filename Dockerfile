@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY server/ ./server/
 COPY source/ ./source/
+COPY client/ ./client/
 
 EXPOSE 8000
 

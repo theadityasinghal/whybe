@@ -906,9 +906,9 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .chip-btn:hover {
-  background: #222222;
-  color: var(--ink);
-  border-color: #444444;
+  background: var(--eulerian-blue-subtle);
+  color: #ffffff;
+  border-color: var(--eulerian-blue-border);
 }
 
 .copilot-chat-container {
@@ -939,9 +939,9 @@ input[type="range"]::-moz-range-thumb {
 
 .chat-bubble.user {
   align-self: flex-end;
-  background: #252525;
+  background: var(--eulerian-blue-muted);
   color: #ffffff;
-  border: 1px solid #333333;
+  border: 1px solid var(--eulerian-blue-border);
 }
 
 .chat-bubble.bot {
@@ -968,9 +968,13 @@ input[type="range"]::-moz-range-thumb {
   outline: none;
 }
 
+.chat-input-row input:focus {
+  background: var(--canvas-subtle);
+}
+
 .btn-send {
-  background: var(--ink);
-  color: var(--on-primary);
+  background: var(--eulerian-blue);
+  color: #ffffff;
   border: none;
   padding: 0 16px;
   font-size: 0.82rem;
@@ -981,7 +985,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .btn-send:hover {
-  background: #e0e0e0;
+  background: var(--eulerian-blue-hover);
+  box-shadow: 0 0 12px var(--eulerian-blue-glow);
 }
 
 /* Simulator & Goal-Seeker Styles */
@@ -1017,7 +1022,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .delta-val.highlight {
-  color: #ffffff;
+  color: var(--eulerian-blue-bright);
 }
 
 .delta-arrow {
@@ -1066,13 +1071,13 @@ input[type="range"]::-moz-range-thumb {
 
 .sim-label-row span {
   font-family: var(--font-mono);
-  color: var(--ink);
+  color: var(--eulerian-blue-bright);
   font-weight: 600;
 }
 
 .sim-control input[type="range"] {
   width: 100%;
-  accent-color: #ffffff;
+  accent-color: var(--eulerian-blue);
   cursor: pointer;
 }
 
@@ -1101,20 +1106,27 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .btn-primary {
-  background: var(--ink);
-  color: var(--on-primary);
-  border: none;
-  padding: 8px 14px;
+  background: var(--eulerian-blue);
+  color: #ffffff;
+  border: 1px solid var(--eulerian-blue-border);
+  padding: 8px 16px;
   font-size: 0.82rem;
   font-weight: 600;
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-family: var(--font-sans);
   transition: var(--transition);
+  box-shadow: 0 0 12px var(--eulerian-blue-subtle);
 }
 
 .btn-primary:hover {
-  background: #e0e0e0;
+  background: var(--eulerian-blue-hover);
+  border-color: var(--eulerian-blue-bright);
+  box-shadow: 0 0 16px var(--eulerian-blue-glow);
+}
+
+.btn-primary:active {
+  background: var(--eulerian-blue-active);
 }
 
 /* Goal Seeker UI */
@@ -1150,6 +1162,12 @@ input[type="range"]::-moz-range-thumb {
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
   outline: none;
+  transition: var(--transition);
+}
+
+.goal-input-group select:focus {
+  border-color: var(--eulerian-blue);
+  box-shadow: 0 0 0 2px var(--eulerian-blue-subtle);
 }
 
 .goal-results-container {
@@ -1195,8 +1213,9 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .step-badge {
-  background: #222222;
-  color: #ffffff;
+  background: var(--eulerian-blue-subtle);
+  color: var(--eulerian-blue-bright);
+  border: 1px solid var(--eulerian-blue-border);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 700;

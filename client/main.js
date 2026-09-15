@@ -99,6 +99,11 @@ function loadPersona(key) {
   const d = PRESETS[key];
   if (!d) return;
 
+  document.querySelectorAll('.btn-preset').forEach(btn => {
+    const attr = btn.getAttribute('onclick') || '';
+    btn.classList.toggle('active', attr.includes(key));
+  });
+
   for (const [k, v] of Object.entries(d)) {
     const el = document.getElementById(k);
     if (el) el.value = v;

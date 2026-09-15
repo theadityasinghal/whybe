@@ -6,6 +6,9 @@
     "server": "export MPLCONFIGDIR=/tmp/mpl_cache && ./.venv/bin/uvicorn server.app:app --host 127.0.0.1 --port 8000 --reload",
     "client": "python3 -m http.server 3000 --directory client",
     "dev": "npm run server & npm run client",
+    "dev:server": "npm run server",
+    "dev:client": "npm run client",
+    "evaluate": "python3 server/evaluate_model.py",
     "start": "uvicorn server.app:app --host 0.0.0.0 --port ${PORT:-8000}"
   },
   "keywords": ["fintech", "credit-scoring", "shap", "fastapi"],

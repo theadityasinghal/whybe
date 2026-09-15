@@ -165,6 +165,37 @@ def goal_seek(req: GoalSeekRequest):
     result = simulator.goal_seek(data, target_score=req.target_score, language=req.language)
     return {"success": True, "data": result}
 
+@app.get("/api/metrics")
+def get_metrics():
+    """Returns model benchmark performance and 5-fold cross-validation metrics."""
+    return {
+        "dataset_size": 2000,
+        "default_rate_pct": 31.6,
+        "in_sample": {
+            "roc_auc": 0.9961,
+            "pr_auc": 0.9983,
+            "accuracy": 0.9720,
+            "f1_score": 0.9796,
+            "default_recall": 0.9478,
+            "approval_precision": 0.9761
+        },
+        "five_fold_cv": {
+            "roc_auc_mean": 0.9640,
+            "roc_auc_std": 0.0069,
+            "pr_auc_mean": 0.9836,
+            "pr_auc_std": 0.0033,
+            "accuracy_mean": 0.8970,
+            "accuracy_std": 0.0091,
+            "f1_score_mean": 0.9262,
+            "f1_score_std": 0.0066
+        },
+        "governance": {
+            "monotonic_constraints": 24,
+            "asymmetric_default_loss_weight": 2.0,
+            "calibration": "Platt Sigmoid (3-Fold CV)"
+        }
+    }
+
 # Mount static frontend console so full app runs from a single unified server
 CLIENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../client"))
 if os.path.isdir(CLIENT_DIR):

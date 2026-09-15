@@ -4,6 +4,12 @@ Evaluates the in-memory Monotonic HistGradientBoostingClassifier against
 the alternate credit dataset (N=2,000) using both full-set and 5-Fold Stratified CV.
 """
 
+import sys
+from pathlib import Path
+
+# Add project root to sys.path so script can be run standalone
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
